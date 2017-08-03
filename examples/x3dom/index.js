@@ -37,17 +37,19 @@ document.onload = function () {
     }
     var modelUrl = "../../" + modelInfo.category + "/" + modelInfo.path;
     shape.append("<externalshape id='exshape' url='" + modelUrl + "' ></externalshape>");
+    shape.append("<externalshape shading='WIREFRAME' id='exshape' url='" + modelUrl + "' ></externalshape>");
+    
     //look for wireframe mesh
     //find model
-    var model = ModelIndex.List.find(function(model){return model.name == modelInfo.name;});
-    if (model.mesh.length > 0) { //has mesh locations
-        var wireframeShape = "<shape shading='WIREFRAME'>\n";
-        wireframeShape += "<appearance>\n";
-        wireframeShape += "  <material diffuseColor='0 0 0'></material>\n";
-        wireframeShape += "  <LineProperties linetype='1' linewidthScaleFactor='2' ></LineProperties>\n"
-        wireframeShape += "</appearance>\n";
-        wireframeShape += "<externalgeometry url='" + modelUrl + "#" + model.mesh[0] + "' ></externalgeometry>\n";
-        wireframeShape += "</shape>\n";
-        shape.append(wireframeShape);
-    }
+//     var model = ModelIndex.List.find(function(model){return model.name == modelInfo.name;});
+//     if (model.mesh.length > 0) { //has mesh locations
+//         var wireframeShape = "<shape shading='WIREFRAME'>\n";
+//         wireframeShape += "<appearance>\n";
+//         wireframeShape += "  <material diffuseColor='0 0 0'></material>\n";
+//         wireframeShape += "  <LineProperties linetype='1' linewidthScaleFactor='2' ></LineProperties>\n"
+//         wireframeShape += "</appearance>\n";
+//         wireframeShape += "<externalgeometry url='" + modelUrl + "#" + model.mesh[0] + "' ></externalgeometry>\n";
+//         wireframeShape += "</shape>\n";
+//         shape.append(wireframeShape);
+//     }
 }
