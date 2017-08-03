@@ -15,17 +15,17 @@ document.onload = function () {
         notSupportedShape += "<appearance>\n";
         notSupportedShape += "  <material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>";
         notSupportedShape += "</appearance>\n"
-        notSupportedShape += "<text string='"+'"Apologies" "only binary supported" " "'+"' solid='false'>";
-        notSupportedShape += "    <fontstyle family='"+'"SANS"'+"' size='0.8' justify='middle'></fontstyle>";
-        notSupportedShape += "</text>";
-        notSupportedShape += "</shape>";
+        notSupportedShape += "<text string='"+'"Apologies" "only binary supported" " "'+"' solid='false'>\n";
+        notSupportedShape += "    <fontstyle family='"+'"SANS"'+"' size='0.7' justify='middle'></fontstyle>\n";
+        notSupportedShape += "</text>\n";
+        notSupportedShape += "</shape>\n";
         shape.append(notSupportedShape);
         return;
     }
     
     var scale = modelInfo.scale;
     shape.attr({scale: scale + " " + scale + " " + scale});
-    if (modelInfo.name == 'GearboxAssy') {
+    if (modelInfo.name == 'GearboxAssy') { // fix gtltf vp
         document.querySelector('timesensor').remove();
         //shape.attr({translation: "-159.20 -17.02 -3.21"});
         var vp = $("#vp");
@@ -35,6 +35,18 @@ document.onload = function () {
         vp.attr({orientation: "-0.5035214059784457 0.8384312102757996 0.20856485647622058 0.9177268588403985"});
         vp.attr({centerofrotation: "159.20 17.02 3.21"});
     }
-    shape.append("<ExternalShape id='exshape' url='../../" + modelInfo.category + "/" + modelInfo.path + "' />");
- 
+    var modelUrl = "../../" + modelInfo.category + "/" + modelInfo.path;
+    shape.append("<externalshape id='exshape' url='" + modelUrl + "' ></externalshape>");
+    //look for wireframe mesh
+    //find model
+    var model = ModelIndex.List.find(function(model){return model.name == modelInfo.name;});
+    if (model.mesh.length > 0) { //has mesh locations
+        var wireframeShape = "<shape>\n";
+        wireframeShape += "<appearance>\n";
+        wireframeShape += "  <material diffuseColor='0 0 0'></material>\n";
+        wireframeShape += "</appearance>\n";
+        wireframeShape += "<externalgeometry shading='WIREFRAME' url='" + modelUrl + "#" + model.mesh[0]"' ></externalgeometry>\n";
+        wireframeShape += "</shape>\n";
+        shape.append(wireframeShape);
+    }
 }
