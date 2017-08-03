@@ -41,11 +41,11 @@ document.onload = function () {
     //find model
     var model = ModelIndex.List.find(function(model){return model.name == modelInfo.name;});
     if (model.mesh.length > 0) { //has mesh locations
-        var wireframeShape = "<shape>\n";
+        var wireframeShape = "<shape shading='WIREFRAME'>\n";
         wireframeShape += "<appearance>\n";
         wireframeShape += "  <material diffuseColor='0 0 0'></material>\n";
         wireframeShape += "</appearance>\n";
-        wireframeShape += "<externalgeometry shading='WIREFRAME' url='" + modelUrl + "#" + model.mesh[0] + "' ></externalgeometry>\n";
+        wireframeShape += "<externalgeometry url='" + modelUrl + "#" + model.mesh[0] + "' ></externalgeometry>\n";
         wireframeShape += "</shape>\n";
         shape.append(wireframeShape);
     }
