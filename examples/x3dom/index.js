@@ -45,7 +45,7 @@ document.onload = function () {
         wireframeShape += "<appearance>\n";
         wireframeShape += "  <material diffuseColor='0 0 0'></material>\n";
         wireframeShape += "</appearance>\n";
-        wireframeShape += "<externalgeometry shading='WIREFRAME' url='" + modelUrl + "#" + model.mesh[0]"' ></externalgeometry>\n";
+        wireframeShape += "<externalgeometry shading='WIREFRAME' url='" + modelUrl + "#" + model.mesh[0] + "' ></externalgeometry>\n";
         wireframeShape += "</shape>\n";
         shape.append(wireframeShape);
     }
