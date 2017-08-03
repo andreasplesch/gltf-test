@@ -36,8 +36,8 @@ document.onload = function () {
         vp.attr({centerofrotation: "159.20 17.02 3.21"});
     }
     var modelUrl = "../../" + modelInfo.category + "/" + modelInfo.path;
-    //shape.append("<externalshape id='exshape' url='" + modelUrl + "' ></externalshape>");
-    shape.append("<externalshape shading='WIREFRAME' id='exshape' url='" + modelUrl + "' ></externalshape>");
+    shape.append("<externalshape id='exshape' url='" + modelUrl + "' ></externalshape>");
+    //shape.append("<externalshape shading='WIREFRAME' id='exshape' url='" + modelUrl + "' ></externalshape>");
     
     //look for wireframe mesh
     //find model
