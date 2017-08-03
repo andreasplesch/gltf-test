@@ -44,6 +44,7 @@ document.onload = function () {
         var wireframeShape = "<shape shading='WIREFRAME'>\n";
         wireframeShape += "<appearance>\n";
         wireframeShape += "  <material diffuseColor='0 0 0'></material>\n";
+        wireframeShape += "  <LineProperties linetype='1' linewidthScaleFactor='2' ></LineProperties>\n"
         wireframeShape += "</appearance>\n";
         wireframeShape += "<externalgeometry url='" + modelUrl + "#" + model.mesh[0] + "' ></externalgeometry>\n";
         wireframeShape += "</shape>\n";
