@@ -37,7 +37,7 @@ document.onload = function () {
     }
     var modelUrl = "../../" + modelInfo.category + "/" + modelInfo.path;
     shape.append("<externalshape id='exshape' url='" + modelUrl + "' ></externalshape>");
-    //shape.append("<externalshape shading='WIREFRAME' id='exshape' url='" + modelUrl + "' ></externalshape>");
+    shape.append("<externalshape shading='WIREFRAME' id='exshape' url='" + modelUrl + "' ></externalshape>");
     
     //look for wireframe mesh
     //find model
