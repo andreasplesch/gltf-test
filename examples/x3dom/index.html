@@ -19,7 +19,7 @@
 <script src="https://x3dom.org/download/dev/x3dom.debug.js"></script>
 
 <!-- x3dom patches -->
-    <script>
+	<script>
 x3dom.glTF.glTFKHRMaterialCommons.prototype.updateTransforms = function(uniform, value)
 {
     var matrix4f = new x3dom.fields.SFMatrix4f();
@@ -107,7 +107,8 @@ x3dom.glTF.glTFKHRMaterialCommons.prototype.bind = function(gl, shaderProgram)
     this.program.technique = this.technique;
 };
 
-    </script>
+	</script>
+	<script>
 /**
  * Created by Sven Kluge on 27.06.2016.
  */
