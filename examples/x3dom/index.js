@@ -26,8 +26,8 @@ document.onload = function () {
     var scale = modelInfo.scale;
     shape.attr({scale: scale + " " + scale + " " + scale});
     if (modelInfo.name == 'GearboxAssy') {
-        document.querySelector('timesensor').remove();
-        //shape.attr({translation: "-159.20 -17.02 -3.21"});
+        //document.querySelector('timesensor').remove();
+        shape.attr({center: "159.20 17.02 3.21"});
         var vp = $("#vp");
         vp.attr({fieldofview: "0.263245"});
         vp.attr({position: "207.615 53.3281 51.6212"});
