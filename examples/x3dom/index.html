@@ -21,8 +21,7 @@
 <!-- x3dom patches -->
 <script>
 x3dom.glTF.glTFLoader.prototype.loadMaterial = function(gl, materialNode)
-{    return new x3dom.glTF.glTFKHRMaterialCommons();
-
+{ 
     if(materialNode){
         if(materialNode.extensions != null && materialNode.extensions.KHR_materials_common != null)
         {
@@ -43,6 +42,8 @@ x3dom.glTF.glTFLoader.prototype.loadMaterial = function(gl, materialNode)
                     }
                     else
                     {
+                        //patch transparency
+                        if (key == 'transparency') {value = 1-value;}
                         material[key] = value;
                     }
                 }
