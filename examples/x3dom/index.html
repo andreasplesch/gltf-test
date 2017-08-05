@@ -16,7 +16,78 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.js"></script>
 
 <!-- x3dom.debug.js 1.7.3-dev -->
-<script src="https://x3dom.org/download/1.7.2/x3dom.debug.js"></script>
+<script src="https://x3dom.org/download/dev/x3dom.debug.js"></script>
+
+<!-- x3dom patches -->
+<script>
+x3dom.glTF.glTFLoader.prototype.loadMaterial = function(gl, materialNode)
+{    return new x3dom.glTF.glTFKHRMaterialCommons();
+
+    if(materialNode){
+        if(materialNode.extensions != null && materialNode.extensions.KHR_materials_common != null)
+        {
+            materialNode = materialNode.extensions.KHR_materials_common;
+
+            var material = new x3dom.glTF.glTFKHRMaterialCommons();
+
+            material.technique = glTF_KHR_MATERIAL_COMMON_TECHNIQUE[materialNode.technique];
+            material.doubleSided = materialNode.doubleSided;
+
+            for(var key in materialNode.values)
+                if(materialNode.values.hasOwnProperty(key))
+                {
+                    var value = materialNode.values[key];
+                    if(typeof value === 'string')
+                    {
+                        material[key+"Tex"] = this.loadTexture(gl, value);
+                    }
+                    else
+                    {
+                        material[key] = value;
+                    }
+                }
+
+            return material;
+        }else
+        {
+            var technique = this.scene.techniques[materialNode.technique];
+            var program = this.loadShaderProgram(gl, technique.program);
+
+            var material = new x3dom.glTF.glTFMaterial(technique);
+            material.program = program;
+
+            for(var key in technique.parameters) {
+                if (!technique.parameters.hasOwnProperty(key)) continue;
+
+                var parameter = technique.parameters[key];
+                if(parameter.value != null){
+                    material.values[key] = parameter.value;
+                }
+            }
+
+            for(var key in materialNode.values)
+                if(materialNode.values.hasOwnProperty(key))
+                {
+                    var value = materialNode.values[key];
+                    if(typeof value === 'string')
+                    {
+                        material.textures[key] = this.loadTexture(gl, value);
+                    }
+                    else
+                    {
+                        material.values[key] = value;
+                    }
+                }
+
+            return material;
+        }
+    }
+
+    return new x3dom.glTF.glTFKHRMaterialCommons();
+};
+
+</script>
+    
 <x3d id="x3d" width="100%" height="100%"> 
     <scene>
         <Environment frustumCulling='false'></Environment>
