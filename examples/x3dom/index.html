@@ -281,7 +281,8 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
                     "light"+l+"_AmbientIntensity, " +
                     "light"+l+"_BeamWidth, " +
                     "light"+l+"_CutOffAngle, " +
-                    "v_normal, eye, shininess * 0.0078125, ambientIntensity);\n";
+			//v_normal in glTF does not need be unit, and shininess has 128 factor built-in
+                    "normalize(v_normal), eye, shininess * 0.0078125, ambientIntensity);\n";
                 shader += "ambient  += " + lightCol + " * ads.r;\n" +
                     "diffuse  += " + lightCol + " * ads.g;\n" +
                     "specular += " + lightCol + " * ads.b;\n";
