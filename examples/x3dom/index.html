@@ -113,55 +113,55 @@ x3dom.glTF.glTFKHRMaterialCommons.prototype.bind = function(gl, shaderProgram)
  * Created by Sven Kluge on 27.06.2016.
  */
 
-x3dom.shader.KHRMaterialCommonsShader = function(gl, properties)
-{
-    this.program = gl.createProgram();
+// x3dom.shader.KHRMaterialCommonsShader = function(gl, properties)
+// {
+//     this.program = gl.createProgram();
 
-    var vertexShader 	= this.generateVertexShader(gl);
-    var fragmentShader 	= this.generateFragmentShader(gl, properties);
+//     var vertexShader 	= this.generateVertexShader(gl);
+//     var fragmentShader 	= this.generateFragmentShader(gl, properties);
 
-    gl.attachShader(this.program, vertexShader);
-    gl.attachShader(this.program, fragmentShader);
+//     gl.attachShader(this.program, vertexShader);
+//     gl.attachShader(this.program, fragmentShader);
 
-    // optional, but position should be at location 0 for performance reasons
-    gl.bindAttribLocation(this.program, 0, "position");
+//     // optional, but position should be at location 0 for performance reasons
+//     gl.bindAttribLocation(this.program, 0, "position");
 
-    gl.linkProgram(this.program);
+//     gl.linkProgram(this.program);
 
-    return this.program;
-};
+//     return this.program;
+// };
 
-x3dom.shader.KHRMaterialCommonsShader.prototype.generateVertexShader = function(gl)
-{
-    var shader = "precision highp float;\n"+
-                "attribute vec3 position;"+
-                "attribute vec3 normal;"+
-                "attribute vec3 texcoord;"+
-                "varying vec3 v_eye;"+
-                "varying vec3 v_normal;"+
-                "varying vec3 v_texcoord;"+
-                "uniform mat4 modelViewProjectionMatrix;"+
-                "uniform mat4 modelViewMatrix;"+
-                "uniform mat4 normalMatrix;"+
-                "void main (void)"+
-                "{"+
-                "    vec4 pos = modelViewProjectionMatrix * vec4(position, 1.0);"+
-                "    v_eye = (modelViewMatrix * vec4(position, 1.0)).xyz;"+
-                "    v_normal = (normalMatrix * vec4(normal,1.0)).xyz;"+
-                "    v_texcoord = texcoord;"+
-                "    gl_Position = pos;"+
-                "}";
+// x3dom.shader.KHRMaterialCommonsShader.prototype.generateVertexShader = function(gl)
+// {
+//     var shader = "precision highp float;\n"+
+//                 "attribute vec3 position;"+
+//                 "attribute vec3 normal;"+
+//                 "attribute vec3 texcoord;"+
+//                 "varying vec3 v_eye;"+
+//                 "varying vec3 v_normal;"+
+//                 "varying vec3 v_texcoord;"+
+//                 "uniform mat4 modelViewProjectionMatrix;"+
+//                 "uniform mat4 modelViewMatrix;"+
+//                 "uniform mat4 normalMatrix;"+
+//                 "void main (void)"+
+//                 "{"+
+//                 "    vec4 pos = modelViewProjectionMatrix * vec4(position, 1.0);"+
+//                 "    v_eye = (modelViewMatrix * vec4(position, 1.0)).xyz;"+
+//                 "    v_normal = (normalMatrix * vec4(normal,1.0)).xyz;"+
+//                 "    v_texcoord = texcoord;"+
+//                 "    gl_Position = pos;"+
+//                 "}";
 
-    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-    gl.shaderSource(vertexShader, shader);
-    gl.compileShader(vertexShader);
+//     var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+//     gl.shaderSource(vertexShader, shader);
+//     gl.compileShader(vertexShader);
 
-    if(!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)){
-        x3dom.debug.logError("[KHRMaterialCommonsShader] VertexShader " + gl.getShaderInfoLog(vertexShader));
-    }
+//     if(!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)){
+//         x3dom.debug.logError("[KHRMaterialCommonsShader] VertexShader " + gl.getShaderInfoLog(vertexShader));
+//     }
 
-    return vertexShader;
-};
+//     return vertexShader;
+// };
 
 x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = function(gl, properties)
 {
