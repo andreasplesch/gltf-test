@@ -1617,6 +1617,12 @@ THREE.GLTFLoader = ( function () {
 
 								case 'NORMAL':
 									geometry.addAttribute( 'normal', bufferAttribute );
+									console.log('has normalized', bufferAttribute.normalized);
+									bufferAttribute.array.forEach(function(c,i,a){if (i%3 == 0 && i < 900) {
+										var x,y,z;
+										x=a[i];y=a[i+1];z=a[i+2];
+										console.log(x,y,z,Math.sqrt(x**2+y**2+z**2));
+}});
 									break;
 
 								case 'TEXCOORD_0':
