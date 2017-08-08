@@ -100,7 +100,7 @@ x3dom.glTF.glTFKHRMaterialCommons.prototype.bind = function(gl, shaderProgram)
     else
         this.program.specular = this.specular;
 
-    this.program.shininess = 2.0;//this.shininess;
+    this.program.shininess = this.shininess;
     this.program.transparency = this.transparency;
     this.program.globalAmbient = this.globalAmbient;
     this.program.lightVector = this.lightVector;
