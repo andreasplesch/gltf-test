@@ -20,6 +20,35 @@
 
 <!-- x3dom patches -->
 	<script>
+x3dom.glTF.glTFKHRMaterialCommons = function()
+{
+    this.diffuse = [0.3,0.1,0.1,1];
+    this.diffuseTex = null;
+
+    this.emission = [0.0,0.0,0.0,1];
+    this.emissionTex = null;
+
+    this.specular = [0.8,0.8,0.8,1];
+    this.specularTex = null;
+
+    this.ambient = [0,0,0,1];
+
+    this.shininess = 2.0;
+    this.transparency = 1.0;
+
+    this.globalAmbient = [0,0,0,1];
+    this.lightVector = [1,0,0,1];
+
+    this.doubleSided = false;
+
+    this.technique = glTF_KHR_MATERIAL_COMMON_TECHNIQUE.CONSTANT;
+
+    this.attributeMapping = {};
+    this.attributeMapping[glTF_BUFFER_IDX.POSITION] = "position";
+    this.attributeMapping[glTF_BUFFER_IDX.NORMAL] = "normal";
+    this.attributeMapping[glTF_BUFFER_IDX.TEXCOORD] = "texcoord";
+    this.attributeMapping[glTF_BUFFER_IDX.COLOR] = "color";
+};
 x3dom.glTF.glTFKHRMaterialCommons.prototype.updateTransforms = function(uniform, value)
 {
     var matrix4f = new x3dom.fields.SFMatrix4f();
