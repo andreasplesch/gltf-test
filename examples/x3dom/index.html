@@ -129,7 +129,7 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateVertexShader = function(
                 "{"+
                 "    vec4 pos = modelViewProjectionMatrix * vec4(position, 1.0);"+
                 "    v_eye = (modelViewMatrix * vec4(position, 1.0)).xyz;"+
-                "    v_normal = normalize(normalMatrix * vec4(normal,1.0)).xyz);"+
+                "    v_normal = normalize((normalMatrix * vec4(normal,1.0)).xyz);"+
                 "    v_texcoord = texcoord;"+
                 "    gl_Position = pos;"+
                 "}";
