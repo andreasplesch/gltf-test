@@ -227,7 +227,7 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
             "else if(technique==1) // PHONG\n"+
             "{\n"+
                 "vec4 R = -reflect(L,N);\n"+
-                "color = _emission + ambient * al + _diffuse * max(dot(N,L),0.0) + _specularColor * pow(max(dot(R,I),0.0),shininess);\n"+
+                "color = _emission + ambient * al + _diffuse * max(dot(N,L),0.0) + _specularColor * pow(max(dot(R,I),1e-30),shininess);\n"+
             "}\n"+
             "else if(technique==2) // LAMBERT\n"+
             "{\n"+
