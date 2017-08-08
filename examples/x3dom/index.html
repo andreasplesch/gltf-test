@@ -113,6 +113,37 @@ x3dom.glTF.glTFKHRMaterialCommons.prototype.bind = function(gl, shaderProgram)
  * Created by Sven Kluge on 27.06.2016.
  */
 
+x3dom.shader.KHRMaterialCommonsShader.prototype.generateVertexShader = function(gl)
+{
+    var shader = "precision highp float;\n"+
+                "attribute vec3 position;"+
+                "attribute vec3 normal;"+
+                "attribute vec3 texcoord;"+
+                "varying vec3 v_eye;"+
+                "varying vec3 v_normal;"+
+                "varying vec3 v_texcoord;"+
+                "uniform mat4 modelViewProjectionMatrix;"+
+                "uniform mat4 modelViewMatrix;"+
+                "uniform mat4 normalMatrix;"+
+                "void main (void)"+
+                "{"+
+                "    vec4 pos = modelViewProjectionMatrix * vec4(position, 1.0);"+
+                "    v_eye = (modelViewMatrix * vec4(position, 1.0)).xyz;"+
+                "    v_normal = normalize(normalMatrix * vec4(normal,1.0)).xyz);"+
+                "    v_texcoord = texcoord;"+
+                "    gl_Position = pos;"+
+                "}";
+
+    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vertexShader, shader);
+    gl.compileShader(vertexShader);
+
+    if(!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)){
+        x3dom.debug.logError("[KHRMaterialCommonsShader] VertexShader " + gl.getShaderInfoLog(vertexShader));
+    }
+
+    return vertexShader;
+};
 
 x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = function(gl, properties)
 {
@@ -219,7 +250,6 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
             shader += "}\n";
 
             shader += "float _shininess = shininess * 0.0078125;\n";
-            shader += "vec3 _normal = normalize(v_normal);\n";
             shader += "vec3 ads;\n";
 
             for(var l=0; l<properties.LIGHTS; l++) {
@@ -235,7 +265,7 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
                     "light"+l+"_BeamWidth, " +
                     "light"+l+"_CutOffAngle, " +
 			//v_normal in glTF does not need be unit, and shininess has 128 factor built-in
-                    "_normal, eye, _shininess, ambientIntensity);\n";
+                    "v_normal, eye, _shininess, ambientIntensity);\n";
                 shader += "ambient  += " + lightCol + " * ads.r;\n" +
                     "diffuse  += " + lightCol + " * ads.g;\n" +
                     "specular += " + lightCol + " * ads.b;\n";
