@@ -197,7 +197,7 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
     "void main(void)\n"+
     "{\n"+
         "vec4 I = -vec4(normalize(v_eye),1.0);\n"+
-        "vec4 N = vec4(normalize(v_normal),1.0);\n"+
+        "vec4 N = vec4(v_normal,1.0);\n"+
         "vec4 al = ambientLight;\n"+
         "vec4 L = normalize(lightVector-vec4(v_eye,1.0));\n";
 
