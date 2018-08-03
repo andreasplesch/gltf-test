@@ -9,7 +9,10 @@ if (!modelInfo) {
     modelInfo = TutorialFurtherPbrModelIndex.getCurrentModel();
 }
 if (!modelInfo) {
-    modelInfo = TutorialAgiPbrModelIndex.getCurrentModel();
+    modelInfo = TutorialFeatureTestModelIndex.getCurrentModel();
+}
+if (!modelInfo) {
+    modelInfo = TutorialExtensionTestModelIndex.getCurrentModel();
 }
 if (!modelInfo) {
     document.getElementById('container').innerHTML = 'Please specify a model to load';
@@ -18,7 +21,7 @@ if (!modelInfo) {
 
 var gui = new dat.GUI();
 var ROTATE = true;
-var mapRotate = gui.add(window, 'ROTATE').name('Rotate');
+var guiRotate = gui.add(window, 'ROTATE').name('Rotate');
 
 gr.registerComponent('Rotate', {
   attributes: {
@@ -32,7 +35,7 @@ gr.registerComponent('Rotate', {
   },
   $update: function () {
     this.phi += ROTATE ? this.getAttribute('speed') : 0;
-    this.node.setAttribute('rotation',0 + ',' + this.phi + ',' + 0);
+    this.node.setAttribute('rotation', 0 + ',' + this.phi + ',' + 0);
   },
 });
 
@@ -40,11 +43,17 @@ gr(function () {
   var $$ = gr('#canvas');
   $$('#group').addComponent('Rotate');
   var scale = modelInfo.scale;
+  var url = "../../" + modelInfo.category + "/" + modelInfo.path;
+  if(modelInfo.url) {
+    url = modelInfo.url;
+  }
   if (modelInfo.name == "GearboxAssy" ) {
       scale = 0.2;
-      $$('#model-container').append('<model src="' + "../../" + modelInfo.category + "/" + modelInfo.path + '" scale="' + scale + '"/>');
+      //$$('#model-container').append('<model src="' + "../../" + modelInfo.category + "/" + modelInfo.path + '" scale="' + scale + '"/>');
+      $$('#model-container').append('<model src="' + url + '" scale="' + scale + '"/>');
       $$('model').setAttribute('position', '-31.84,-3.404,-0.642');
   } else {
-      $$('#model-container').append('<model src="' + "../../" + modelInfo.category + "/" + modelInfo.path + '" scale="' + scale + '"/>');
+      //$$('#model-container').append('<model src="' + "../../" + modelInfo.category + "/" + modelInfo.path + '" scale="' + scale + '"/>');
+      $$('#model-container').append('<model src="' + url + '" scale="' + scale + '"/>');
   }
 });

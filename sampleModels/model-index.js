@@ -5,6 +5,7 @@ ModelIndex.List = [
     //{category:'sampleModels', name:'BoxWithoutIndices', scale:1.0},
     {category:'sampleModels', name:'BoxInterleaved', scale:1.0},
     {category:'sampleModels', name:'BoxTextured', scale:1.0},
+    {category:'sampleModels', name:'BoxTexturedNonPowerOfTwo', scale:1.0},
     {category:'sampleModels', name:'BoxVertexColors', scale:1.0},
     {category:'sampleModels', name:'Duck', scale:1.0},
     {category:'sampleModels', name:'2CylinderEngine', scale:0.005},
@@ -18,7 +19,8 @@ ModelIndex.List = [
     {category:'sampleModels', name:'CesiumMan', scale:1.0},
     {category:'sampleModels', name:'Monster', scale:0.05},
     {category:'sampleModels', name:'BrainStem', scale:1.0},
-    {category:'sampleModels', name:'VC', scale:0.2}
+    {category:'sampleModels', name:'VC', scale:0.2},
+    {category:'sampleModels', name:'WalkingLady', scale:1.0}
 ];
 
 ModelIndex.HasGifScreenshot = [ // List of only models that have *.gif screenshots (as opposed to *.png)
@@ -71,6 +73,9 @@ ModelIndex.getCurrentModel = function() {
     if (options.type === undefined) {
         options.type = 'glTF';
     }
+    if (options.scale === undefined) {
+        options.scale = 1.0;
+    }
     if (options.model && modelInfoCollection.hasOwnProperty(options.model)) {
         document.title += ' + ' + options.model + '.gltf';
         if (options.scale !== undefined) {
@@ -82,6 +87,9 @@ ModelIndex.getCurrentModel = function() {
             modelInfoCollection[options.model].path = modelInfoCollection[options.model].name + '/' + options.type + '/' + modelInfoCollection[options.model].name + '.gltf';
         }
         return modelInfoCollection[options.model];
+    }
+    if (options.url) {
+    	return {category:"Other", name:"Other", scale: options.scale, url: options.url};
     }
     return undefined;
 };

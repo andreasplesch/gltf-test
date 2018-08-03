@@ -1,4 +1,4 @@
-var modelInfo = ModelIndex.getCurrentModel();
+let modelInfo = ModelIndex.getCurrentModel();
 if (!modelInfo) {
     modelInfo = TutorialModelIndex.getCurrentModel();
 }
@@ -9,20 +9,29 @@ if (!modelInfo) {
     modelInfo = TutorialFurtherPbrModelIndex.getCurrentModel();
 }
 if (!modelInfo) {
-    modelInfo = TutorialAgiPbrModelIndex.getCurrentModel();
+    modelInfo = TutorialFeatureTestModelIndex.getCurrentModel();
+}
+if (!modelInfo) {
+    modelInfo = TutorialExtensionTestModelIndex.getCurrentModel();
 }
 if (!modelInfo) {
     document.getElementById('container').innerHTML = 'Please specify a model to load';
     throw new Error('Model not specified or not found in list.');
 }
 
-var canvas = document.getElementById("world");
-var width = window.innerWidth;
-var height = window.innerHeight;
-var scale = modelInfo.scale;
+let canvas = document.getElementById("world");
+let width = window.innerWidth;
+let height = window.innerHeight;
+let url = "../../" + modelInfo.category + "/" + modelInfo.path;
+if(modelInfo.url) {
+    url = modelInfo.url;
+}
+let scale = modelInfo.scale;
 
-var glBoostContext = new GLBoost.GLBoostMiddleContext(canvas);
-var renderer = glBoostContext.createRenderer({
+console.log(GLBoost.VERSION);
+
+let glBoostContext = new GLBoost.GLBoostMiddleContext(canvas);
+let renderer = glBoostContext.createRenderer({
     clearColor: {
         red: 0.6,
         green: 0.6,
@@ -30,16 +39,17 @@ var renderer = glBoostContext.createRenderer({
         alpha: 1
     }
 });
+
 renderer.resize(width, height);
 
-var scene = glBoostContext.createScene();
+let scene = glBoostContext.createScene();
 
-var pointLight = glBoostContext.createPointLight(new GLBoost.Vector3(1.0, 1.0, 1.0));
+let pointLight = glBoostContext.createPointLight(new GLBoost.Vector3(1.0, 1.0, 1.0));
 pointLight.translate = new GLBoost.Vector3(10, 10, 10);
 scene.addChild(pointLight);
-var camera = glBoostContext.createPerspectiveCamera({
-    eye: new GLBoost.Vector3(0.0, 3.0, 4.0),
-    center: new GLBoost.Vector3(0.0, 1.0, 0.0),
+let camera = glBoostContext.createPerspectiveCamera({
+    eye: new GLBoost.Vector3(0.0, 2.0, 3.0),
+    center: new GLBoost.Vector3(0.0, 0.0, 0.0),
     up: new GLBoost.Vector3(0.0, 1.0, 0.0)
 }, {
     fovy: 75.0,
@@ -48,13 +58,28 @@ var camera = glBoostContext.createPerspectiveCamera({
     zFar: 3000.0
 });
 camera.cameraController = glBoostContext.createCameraController();
+//camera.cameraController.zFarAdjustingFactorBasedOnAABB = 3;
 scene.addChild(camera);
 
-var gtime = 0;
-var glTFLoader = GLBoost.GLTFLoader.getInstance();
-//var promise = glTFLoader.loadGLTF(glBoostContext, "../../sampleModels/" + modelInfo.path, null);
-var promise = glTFLoader.loadGLTF(glBoostContext, "../../" + modelInfo.category + "/" + modelInfo.path, null);
-promise.then(function(group) {
+let gtime = 0;
+let glTF2Loader = GLBoost.GLTF2Loader.getInstance();
+let modelConverter = GLBoost.ModelConverter.getInstance();
+//let promise = glTF2Loader.loadGLTF("../../" + modelInfo.category + "/" + modelInfo.path, {
+let promise = glTF2Loader.loadGLTF(url, {
+      extensionLoader: null,
+      defaultShaderClass: GLBoost.PhongShader,
+      isNeededToMultiplyAlphaToColorOfPixelOutput: true,
+      isTextureImageToLoadPreMultipliedAlpha: false,
+      isExistJointGizmo: false,
+      isBlend: false,
+      isDepthTest: true,
+      isAllMeshesTransparent: false
+    });
+      
+promise.then(function(gltfObj) {
+    let group = modelConverter.convertToGLBoostModel(glBoostContext, gltfObj);
+    //camera.cameraController.target = group;
+    console.log(group);
     //console.log(group);
     if (modelInfo.name == "GearboxAssy" ) {
         scale = 0.2;
@@ -64,23 +89,39 @@ promise.then(function(group) {
         group.scale = new GLBoost.Vector3(scale, scale, scale);
     }
     scene.addChild(group);
-    
-    var expression = glBoostContext.createExpressionAndRenderPasses(1);
+
+    let expression = glBoostContext.createExpressionAndRenderPasses(1);
     expression.renderPasses[0].scene = scene;
     expression.prepareToRender();
     
-    var render = function() {
+    const animationLength = group.getEndAnimationInputValue('time');
+    let lastAnimatedTime = Date.now();
+    renderer.doConvenientRenderLoop(expression, function() {
+        let currentMillisecondDeltaFromStart = Date.now() - lastAnimatedTime;
+        scene.setCurrentAnimationValue('time', currentMillisecondDeltaFromStart / 1000);
+        if (currentMillisecondDeltaFromStart / 1000 > animationLength) {
+            lastAnimatedTime = Date.now();
+        }
+
+        let rotateMatrix = GLBoost.Matrix33.rotateY(0.75);
+        let rotatedVector = rotateMatrix.multiplyVector(camera.eye);
+        camera.eye = rotatedVector;
+    });
+/*
+    let render = function() {
         scene.setCurrentAnimationValue('time', gtime);
         renderer.clearCanvas();
+        renderer.update(expression); 
         renderer.draw(expression);
         gtime += 0.03;
         if (gtime > 5) {
             gtime = 0.0;
         }
-        var rotateMatrix = GLBoost.Matrix33.rotateY(-0.5);
-        var rotatedVector = rotateMatrix.multiplyVector(camera.eye);
+        let rotateMatrix = GLBoost.Matrix33.rotateY(0.75);
+        let rotatedVector = rotateMatrix.multiplyVector(camera.eye);
         camera.eye = rotatedVector;
         requestAnimationFrame(render);
     };
     render();
+*/
 });

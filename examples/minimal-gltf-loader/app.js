@@ -1,3 +1,10 @@
+// GUI
+var isDisplayRotation = true;
+var drawBoundingBox = false;
+var gui = new dat.GUI();
+var guiRotate = gui.add(window, 'isDisplayRotation').name('Rotate');
+var guiBounding = gui.add(window, 'drawBoundingBox').name('Bounding Box');
+
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -2624,7 +2631,10 @@ var Utils = Utils || {};
 	    modelInfo = TutorialFurtherPbrModelIndex.getCurrentModel();
 	}
 	if (!modelInfo) {
-	    modelInfo = TutorialAgiPbrModelIndex.getCurrentModel();
+	    modelInfo = TutorialFeatureTestModelIndex.getCurrentModel();
+	}
+	if (!modelInfo) {
+	    modelInfo = TutorialExtensionTestModelIndex.getCurrentModel();
 	}
 	if (!modelInfo) {
 	    document.getElementById('container').innerHTML = 'Please specify a model to load';
@@ -2632,7 +2642,7 @@ var Utils = Utils || {};
 	}
 
 
-    var drawBoundingBox = true;
+    //var drawBoundingBox = true;
     var boundingBoxType = 'obb';
     var curAnimationId = 0;
     var playAllAnimationTogether = true;
@@ -3172,7 +3182,7 @@ var Utils = Utils || {};
     var WEIGHTS_1_LOCATION = 6; // set with GLSL layout qualifier
     
     // -- Mouse Behaviour
-    var isDisplayRotation = true;
+    //var isDisplayRotation = true;
     var s = 1;
     var eulerX = 0;
     var eulerY = 0;
@@ -3237,7 +3247,10 @@ var Utils = Utils || {};
     // 2.0
     // var gltfUrl = '../glTFs/glTF_version_2/Duck/glTF/Duck.gltf';
     //var gltfUrl = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF/DamagedHelmet.gltf';
-	var gltfUrl = "../../" + modelInfo.category + "/" + modelInfo.path;
+    var gltfUrl = "../../" + modelInfo.category + "/" + modelInfo.path;
+    if(modelInfo.url) {
+        gltfUrl = modelInfo.url;
+    }
 
     var glTFLoader = new MinimalGLTFLoader.glTFLoader(gl);
 
@@ -3496,8 +3509,8 @@ var Utils = Utils || {};
         var scale = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["vec3"].create();
         
         var r = 0.0;
-        var rotationSpeedY= 0.01;
-        // var rotationSpeedY= 0.0;
+        //var rotationSpeedY= 0.01;
+        var rotationSpeedY= -0.01;
 
         var perspective = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["mat4"].create();
         __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["mat4"].perspective(perspective, 0.785, canvas.width / canvas.height, 0.01, 100);

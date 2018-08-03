@@ -9,7 +9,10 @@ if (!modelInfo) {
     modelInfo = TutorialFurtherPbrModelIndex.getCurrentModel();
 }
 if (!modelInfo) {
-    modelInfo = TutorialAgiPbrModelIndex.getCurrentModel();
+    modelInfo = TutorialFeatureTestModelIndex.getCurrentModel();
+}
+if (!modelInfo) {
+    modelInfo = TutorialExtensionTestModelIndex.getCurrentModel();
 }
 if (!modelInfo) {
     document.getElementById('container').innerHTML = 'Please specify a model to load';
@@ -17,14 +20,24 @@ if (!modelInfo) {
 }
 
 var url = "../../" + modelInfo.category + "/" + modelInfo.path;
+if(modelInfo.url) {
+    url = modelInfo.url;
+}
 var scale = modelInfo.scale;
 var modelName = modelInfo.name;
+var axis;
+
+var ROTATE = true;
+var AXIS = true;
+var gui = new dat.GUI();
+var guiRotate = gui.add(window, 'ROTATE').name('Rotate');
+var guiAxis = gui.add(window, 'AXIS').name('Axis');
 
 var camera = new Hilo3d.PerspectiveCamera({
     aspect: innerWidth / innerHeight,
     fov:75,
     far: 2000,
-    near: 1,
+    near: 0.1,
     z:3
 });
 
@@ -39,7 +52,7 @@ var stage = new Hilo3d.Stage({
 
 var container = new Hilo3d.Node({
     onUpdate:function(){
-        this.rotationY += 0.1;
+        this.rotationY -= ROTATE ? 0.2 : 0;
     }
 }).addTo(stage);
 
@@ -78,9 +91,13 @@ var loadQueue = new Hilo3d.LoadQueue([{
     bottom: '../../textures/cube/skybox/ny.jpg',
     front: '../../textures/cube/skybox/pz.jpg',
     back: '../../textures/cube/skybox/nz.jpg',
+    magFilter: Hilo3d.constants.LINEAR,
+    minFilter: Hilo3d.constants.LINEAR_MIPMAP_LINEAR
 },{
+    type:'Texture',
     src: '../../textures/brdfLUT.png',
-    type:'Texture'
+    wrapS: Hilo3d.constants.CLAMP_TO_EDGE,
+    wrapT: Hilo3d.constants.CLAMP_TO_EDGE
 },{
     src:url
 }]).on('load', function(e){
@@ -123,7 +140,8 @@ var loadQueue = new Hilo3d.LoadQueue([{
 
     node.setScale(scale);
     container.addChild(node);
-    container.addChild(new Hilo3d.AxisHelper());
+    axis = new Hilo3d.AxisHelper();
+    container.addChild(axis);
 
     var skybox = new Hilo3d.Mesh({
         geometry: new Hilo3d.BoxGeometry(),
@@ -133,10 +151,14 @@ var loadQueue = new Hilo3d.LoadQueue([{
             diffuse: specularEnvMap
         })
     }).addTo(container);
-    skybox.setScale(20);
+    skybox.setScale(50);
 
     var orbitControls = new OrbitControls(stage, {
         isLockMove:true,
         isLockZ:true,
     });
 }).start();
+
+guiAxis.onChange(function (value) {
+    axis.visible = value;
+});

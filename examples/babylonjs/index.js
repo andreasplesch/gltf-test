@@ -9,16 +9,19 @@ if (!modelInfo) {
     modelInfo = TutorialFurtherPbrModelIndex.getCurrentModel();
 }
 if (!modelInfo) {
-    modelInfo = TutorialAgiPbrModelIndex.getCurrentModel();
+    modelInfo = TutorialFeatureTestModelIndex.getCurrentModel();
+}
+if (!modelInfo) {
+    modelInfo = TutorialExtensionTestModelIndex.getCurrentModel();
 }
 if (!modelInfo) {
     document.getElementById('container').innerHTML = 'Please specify a model to load';
     throw new Error('Model not specified or not found in list.');
 }
 
-var gui;
 var ROTATE = true;
 var BOUNDING_BOX = false;
+var DEBUG = false;
 
 var createScene = function(engine) {
 
@@ -29,6 +32,9 @@ var createScene = function(engine) {
     var scale = modelInfo.scale;
     //var path = "../../sampleModels/" + modelInfo.path;
     var path = "../../" + modelInfo.category + "/" + modelInfo.path;
+    if(modelInfo.url) {
+        path = modelInfo.url;
+    }
     var base = path.substr(0, path.lastIndexOf("/") + 1);
     var file = path.substr(path.lastIndexOf("/") + 1);
 
@@ -53,11 +59,12 @@ var createScene = function(engine) {
     }
 
     // GUI
-    gui = new dat.GUI();
-    var mapRotate = gui.add(window, 'ROTATE').name('Rotate');
-    var mapBoundingBox = gui.add(window, 'BOUNDING_BOX').name('Bounding Box');
+    var gui = new dat.GUI();
+    var guiRotate = gui.add(window, 'ROTATE').name('Rotate');
+    var guiBoundingBox = gui.add(window, 'BOUNDING_BOX').name('Bounding Box');
+    var guiDebug = gui.add(window, 'DEBUG').name('Debug');
 
-    BABYLON.SceneLoader.Load(base, file, engine, function(newScene) {
+    var loader = BABYLON.SceneLoader.Load(base, file, engine, function(newScene) {
 
         scene = newScene;
         var parentMesh = findParentForMeshes(scene.meshes);
@@ -79,25 +86,34 @@ var createScene = function(engine) {
         var light2 = new BABYLON.DirectionalLight("dir02", new BABYLON.Vector3(-0.5, -0.5, -0.5), scene);
 
         // Skybox
-        var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, scene);
-        var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
-        skyboxMaterial.backFaceCulling = false;
-        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture(
+        var cubeTexture = new BABYLON.CubeTexture(
             "../../textures/cube/skybox/",
             scene,
             ["px.jpg", "py.jpg", "pz.jpg", "nx.jpg", "ny.jpg", "nz.jpg"]
-            );
+        );
+        scene.createDefaultSkybox(cubeTexture, true, 10000);
+/*
+        // If you care about the performance of createDefaultSkybox(), The following code can be used to avoid this. However, the environmental texture will not be applied.
+        // http://www.html5gamedevs.com/topic/36997-using-skybox-takes-time-to-display-is-it-a-usage-problem/?tab=comments#comment-211765
+        var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000, scene);
+        var skyboxMaterial = new BABYLON.StandardMaterial("skyBoxMaterial", scene);
+        skyboxMaterial.backFaceCulling = false;
+        skyboxMaterial.reflectionTexture = cubeTexture;
         skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
         skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-        skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
         skyboxMaterial.disableLighting = true;
         skybox.material = skyboxMaterial;
-
-        //scene.forceShowBoundingBoxes = true;
+*/
         //scene.debugLayer.show(true, camera);
 
-        mapBoundingBox.onChange(function (value) {
+        guiBoundingBox.onChange(function (value) {
             scene.forceShowBoundingBoxes = value;
+        });
+
+        guiDebug.onChange(function (value) {
+            if ( value ) {
+                scene.debugLayer.show({popup: true});
+            }
         });
 
         engine.runRenderLoop(function() {
@@ -105,11 +121,14 @@ var createScene = function(engine) {
             scene.render();
         });
     });
+    
     return scene;
 }
 
 var canvas = document.querySelector("#renderCanvas");
 var engine = new BABYLON.Engine(canvas, true);
+engine.enableOfflineSupport = false; // Suppress manifest reference
+
 window.addEventListener('resize', function() {
     engine.resize();
 });

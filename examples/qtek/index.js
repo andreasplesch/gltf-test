@@ -9,7 +9,10 @@ if (!modelInfo) {
     modelInfo = TutorialFurtherPbrModelIndex.getCurrentModel();
 }
 if (!modelInfo) {
-    modelInfo = TutorialAgiPbrModelIndex.getCurrentModel();
+    modelInfo = TutorialFeatureTestModelIndex.getCurrentModel();
+}
+if (!modelInfo) {
+    modelInfo = TutorialExtensionTestModelIndex.getCurrentModel();
 }
 if (!modelInfo) {
     document.getElementById('container').innerHTML = 'Please specify a model to load';
@@ -17,6 +20,10 @@ if (!modelInfo) {
 }
 
 var url = "../../" + modelInfo.category + "/" + modelInfo.path;
+
+var ROTATE = true;
+var gui = new dat.GUI();
+var guiRotate = gui.add(window, 'ROTATE').name('Rotate');
 
 var viewer = new QMV.Viewer(document.getElementById('container'), {
     // Full config at
@@ -60,10 +67,11 @@ viewer.loadModel(url, {
             center: [0, 0, 0],
 
             // If auto rotate.
-            autoRotate: true,
+            //autoRotate: true,
+            autoRotate: ROTATE,
 
             // Degree per second.
-            autoRotateSpeed: 60,
+            autoRotateSpeed: 20,
 
             // Direction of autoRotate. cw or ccw when looking top down.
             autoRotateDirection: 'cw',
@@ -116,3 +124,7 @@ viewer.loadModel(url, {
     .on('error', function () {
         console.log('Model load error');
     });
+
+guiRotate.onChange(function (value) {
+    viewer.setCameraControl({autoRotate: value});
+});

@@ -90,7 +90,6 @@
     ],
     "materials": [
         {
-            "alphaMode": "BLEND",
             "name": "Default",
             "pbrMetallicRoughness": {
                 "baseColorFactor": [
