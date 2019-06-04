@@ -1,4 +1,4 @@
-var modelInfo = ModelIndex.getCurrentModel();
+let modelInfo = ModelIndex.getCurrentModel();
 if (!modelInfo) {
     modelInfo = TutorialModelIndex.getCurrentModel();
 }
@@ -19,39 +19,53 @@ if (!modelInfo) {
     throw new Error('Model not specified or not found in list.');
 }
 
-var scale = modelInfo.scale;
-var url = "../../" + modelInfo.category + "/" + modelInfo.path;
+let scale = modelInfo.scale;
+let url = "../../" + modelInfo.category + "/" + modelInfo.path;
 if(modelInfo.url) {
     url = modelInfo.url;
 }
 var ROTATE = true;
-var gui = new dat.GUI();
-var guiRotate = gui.add(window, 'ROTATE').name('Rotate');
+let gui = new dat.GUI();
+let guiRotate = gui.add(window, 'ROTATE').name('Rotate');
 
 // Load glTF
-var model = new xeogl.GLTFModel({
-    //src: "../../" + modelInfo.category + "/" + modelInfo.path,
+let model = new xeogl.GLTFModel({
     src: url,
-    transform: new xeogl.Scale({
-        xyz: [scale,scale,scale]
-    })
+    scale: [scale,scale,scale]
 });
 
-var skybox = new xeogl.Skybox({
+let skybox = new xeogl.Skybox({
     src: "../../textures/skybox/cloudySkyBox.jpg",
     active: true
 });
 
 // Get the default Scene off the Skybox
-var scene = skybox.scene;
+let scene = skybox.scene;
 
-scene.lights.lights = [
-    new xeogl.AmbientLight({
-        color: [1.0, 0.7, 0.7]
-    })
-];
+scene.clearLights();
 
-var camera = scene.camera;
+let ambientLight = new xeogl.AmbientLight({
+    //color: [1.0, 0.3, 0.7]
+    color: [0.06, 0.06, 0.18]
+});
+
+new xeogl.DirLight({
+    id: "keyLight",
+    dir: [0.0, 0.0, 1.0],
+    color: [1.0, 0.9, 0.9],
+    intensity: 0.5,
+    space: "view"
+});
+
+new xeogl.DirLight({
+    id: "fillLight",
+    dir: [0, 0, -5],
+    color: [1.0, 0.9, 0.9],
+    intensity: 0.5,
+    space: "view"
+});
+
+let camera = scene.camera;
 if (modelInfo.name == "GearboxAssy" ) {
     camera.eye = [184.21, 10.54, -7.03];
     camera.look = [159.20, 17.02, 3.21];
@@ -62,50 +76,6 @@ if (modelInfo.name == "GearboxAssy" ) {
     camera.up = [0.0, 1.0, 0.0];
 }
 
-var dirLights = [
-    new xeogl.DirLight({
-        id: "keyLight",
-        dir: [0.8, -0.6, -0.8],
-        color: [0.8, 0.8, 0.8],
-        intensity: 1.0,
-        space: "world"
-    }),
-
-    new xeogl.DirLight({
-        id: "fillLight",
-        dir: [-0.8, -0.4, -0.4],
-        color: [0.4, 0.4, 0.5],
-        intensity: 1.0,
-        space: "world"
-    }),
-
-    new xeogl.DirLight({
-        id: "rimLight",
-        dir: [0.2, -0.8, 0.8],
-        color: [0.8, 0.8, 0.8],
-        intensity: 1.0,
-        space: "world"
-    })
-];
-
-var reflectionMap = new xeogl.CubeTexture({
-    src: [
-        "../../textures/cube/skybox/px.jpg",
-        "../../textures/cube/skybox/nx.jpg",
-        "../../textures/cube/skybox/py.jpg",
-        "../../textures/cube/skybox/ny.jpg",
-        "../../textures/cube/skybox/pz.jpg",
-        "../../textures/cube/skybox/nz.jpg"
-    ],
-    encoding: "linear"
-});
-
-var lights = scene.lights;
-lights.lights = dirLights;
-
-lights.reflectionMap = reflectionMap;
- 
-
 new xeogl.CameraControl();
 scene.on("tick",
     function () {
@@ -113,3 +83,4 @@ scene.on("tick",
             camera.orbitYaw(0.2);
         }
     });
+

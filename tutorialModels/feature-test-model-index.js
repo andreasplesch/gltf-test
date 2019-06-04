@@ -1,9 +1,10 @@
-var TutorialFeatureTestModelIndex = {};
+let TutorialFeatureTestModelIndex = {};
 
 TutorialFeatureTestModelIndex.List = [
     {category:'tutorialModels', name:'AlphaBlendModeTest', scale:0.5},
     {category:'tutorialModels', name:'BoomBoxWithAxes', scale:80.0},
     {category:'tutorialModels', name:'MetalRoughSpheres', scale:0.2},
+    {category:'tutorialModels', name:'MorphPrimitivesTest', scale:2.0},
     {category:'tutorialModels', name:'MultiUVTest', scale:1.0},
     {category:'tutorialModels', name:'NormalTangentTest', scale:1.0},
     {category:'tutorialModels', name:'NormalTangentMirrorTest', scale:1.0},
@@ -16,32 +17,33 @@ TutorialFeatureTestModelIndex.List = [
 TutorialFeatureTestModelIndex.HasJpgScreenshot = [ // List of only models that have *.jpg screenshots
     'BoomBoxWithAxes',
     'MultiUVTest',
+    'MorphPrimitivesTest'
 ];
 
 TutorialFeatureTestModelIndex.getScreenshot = function(name) {
-    var extension = ((TutorialFeatureTestModelIndex.HasJpgScreenshot.indexOf(name) < 0) ? 'png' : 'jpg');
+    let extension = ((TutorialFeatureTestModelIndex.HasJpgScreenshot.indexOf(name) < 0) ? 'png' : 'jpg');
     return name + '/screenshot/screenshot.' + extension;
 };
 
 //TutorialFeatureTestModelIndex.getEmbeddedFolderName = function(name) {
-//    var suffixHash = {
+//    let suffixHash = {
 //        'SimpleMaterial': '-buffer',
 //        'AdvancedMaterial': '-buffer',
 //        'SimpleOpacity': '-buffer',
 //        'SimpleTexture': '-buffer',
 //        'SimpleSkin': '-buffers'
 //    };
-//    var suffix = suffixHash[name] === undefined ? '' : suffixHash[name];
+//    let suffix = suffixHash[name] === undefined ? '' : suffixHash[name];
 //    return 'glTF-Embedded' + suffix;
 //};
 
 TutorialFeatureTestModelIndex.getModelInfoCollection = function() {
-    var numModels = TutorialFeatureTestModelIndex.List.length;
-    var modelInfoCollection = {};
-    for (var i = 0; i < numModels; ++i) {
-        var category = TutorialFeatureTestModelIndex.List[i].category;
-        var name = TutorialFeatureTestModelIndex.List[i].name;
-        var scale = TutorialFeatureTestModelIndex.List[i].scale;
+    let numModels = TutorialFeatureTestModelIndex.List.length;
+    let modelInfoCollection = {};
+    for (let i = 0; i < numModels; ++i) {
+        let category = TutorialFeatureTestModelIndex.List[i].category;
+        let name = TutorialFeatureTestModelIndex.List[i].name;
+        let scale = TutorialFeatureTestModelIndex.List[i].scale;
         modelInfoCollection[name] = {
             category: category,
             name: name,
@@ -52,15 +54,15 @@ TutorialFeatureTestModelIndex.getModelInfoCollection = function() {
 }
 
 TutorialFeatureTestModelIndex.getCurrentModel = function() {
-    var modelInfoCollection = TutorialFeatureTestModelIndex.getModelInfoCollection();
-    var queryString = window.location.search.substring(1);
-    var parts = queryString.replace(/\+/g, '%20').split('&');
-    var options = {};
-    for (var i = 0, len = parts.length; i < len; ++i) {
-        var subparts = parts[i].split('=');
+    let modelInfoCollection = TutorialFeatureTestModelIndex.getModelInfoCollection();
+    let queryString = window.location.search.substring(1);
+    let parts = queryString.replace(/\+/g, '%20').split('&');
+    let options = {};
+    for (let i = 0, len = parts.length; i < len; ++i) {
+        let subparts = parts[i].split('=');
 
-        var name = decodeURIComponent(subparts[0]);
-        var value = subparts[1];
+        let name = decodeURIComponent(subparts[0]);
+        let value = subparts[1];
         if (value) {
             options[name] = decodeURIComponent(value);
         }
@@ -73,7 +75,7 @@ TutorialFeatureTestModelIndex.getCurrentModel = function() {
         if (options.scale !== undefined) {
             modelInfoCollection[options.model].scale = options.scale;
         }
-        if (options.type == 'glTF-Binary') {
+        if (options.type == 'glTF-Binary' || options.type == 'glTF-Draco' && options.model == 'MorphPrimitivesTest') {
             modelInfoCollection[options.model].path = modelInfoCollection[options.model].name + '/' + options.type + '/' + modelInfoCollection[options.model].name + '.glb';
         } else {
             modelInfoCollection[options.model].path = modelInfoCollection[options.model].name + '/' + options.type + '/' + modelInfoCollection[options.model].name + '.gltf';

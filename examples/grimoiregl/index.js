@@ -1,4 +1,4 @@
-var modelInfo = ModelIndex.getCurrentModel();
+let modelInfo = ModelIndex.getCurrentModel();
 if (!modelInfo) {
     modelInfo = TutorialModelIndex.getCurrentModel();
 }
@@ -19,9 +19,9 @@ if (!modelInfo) {
     throw new Error('Model not specified or not found in list.');
 }
 
-var gui = new dat.GUI();
+let gui = new dat.GUI();
 var ROTATE = true;
-var guiRotate = gui.add(window, 'ROTATE').name('Rotate');
+let guiRotate = gui.add(window, 'ROTATE').name('Rotate');
 
 gr.registerComponent('Rotate', {
   attributes: {
@@ -40,20 +40,15 @@ gr.registerComponent('Rotate', {
 });
 
 gr(function () {
-  var $$ = gr('#canvas');
+  let $$ = gr('#canvas');
   $$('#group').addComponent('Rotate');
-  var scale = modelInfo.scale;
-  var url = "../../" + modelInfo.category + "/" + modelInfo.path;
+  let scale = modelInfo.scale;
+  let url = "../../" + modelInfo.category + "/" + modelInfo.path;
   if(modelInfo.url) {
     url = modelInfo.url;
   }
+  $$('#model-container').append('<model src="' + url + '" scale="' + scale + '"/>');
   if (modelInfo.name == "GearboxAssy" ) {
-      scale = 0.2;
-      //$$('#model-container').append('<model src="' + "../../" + modelInfo.category + "/" + modelInfo.path + '" scale="' + scale + '"/>');
-      $$('#model-container').append('<model src="' + url + '" scale="' + scale + '"/>');
       $$('model').setAttribute('position', '-31.84,-3.404,-0.642');
-  } else {
-      //$$('#model-container').append('<model src="' + "../../" + modelInfo.category + "/" + modelInfo.path + '" scale="' + scale + '"/>');
-      $$('#model-container').append('<model src="' + url + '" scale="' + scale + '"/>');
   }
 });

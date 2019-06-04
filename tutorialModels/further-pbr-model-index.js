@@ -1,4 +1,4 @@
-var TutorialFurtherPbrModelIndex = {};
+let TutorialFurtherPbrModelIndex = {};
 
 TutorialFurtherPbrModelIndex.List = [
     {category:'tutorialModels', name:'TwoSidedPlane', scale:1.0},
@@ -6,37 +6,43 @@ TutorialFurtherPbrModelIndex.List = [
     {category:'tutorialModels', name:'AnimatedCube', scale:1.0},
     {category:'tutorialModels', name:'Suzanne', scale:1.0},
     {category:'tutorialModels', name:'SciFiHelmet', scale:1.0},
+    {category:'tutorialModels', name:'AntiqueCamera', scale:0.3},
 ];
 
 TutorialFurtherPbrModelIndex.HasGifScreenshot = [ // List of only models that have *.gif screenshots (as opposed to *.png)
     'AnimatedCube',
 ];
 
+TutorialFurtherPbrModelIndex.HasPngScreenshot = [ // List of only models that have *.png screenshots
+    'AntiqueCamera',
+];
+
+
 TutorialFurtherPbrModelIndex.getScreenshot = function(name) {
-    //var extension = ((TutorialFurtherPbrModelIndex.HasGifScreenshot.indexOf(name) < 0) ? 'png' : 'gif');
-    var extension = ((TutorialFurtherPbrModelIndex.HasGifScreenshot.indexOf(name) < 0) ? 'jpg' : 'gif');
+    let extension = ((TutorialFurtherPbrModelIndex.HasGifScreenshot.indexOf(name) < 0) ? 'jpg' : 'gif');
+    extension = ((TutorialFurtherPbrModelIndex.HasPngScreenshot.indexOf(name) < 0) ? extension : 'png');
     return name + '/screenshot/screenshot.' + extension;
 };
 
 //TutorialFurtherPbrModelIndex.getEmbeddedFolderName = function(name) {
-//    var suffixHash = {
+//    let suffixHash = {
 //        'SimpleMaterial': '-buffer',
 //        'AdvancedMaterial': '-buffer',
 //        'SimpleOpacity': '-buffer',
 //        'SimpleTexture': '-buffer',
 //        'SimpleSkin': '-buffers'
 //    };
-//    var suffix = suffixHash[name] === undefined ? '' : suffixHash[name];
+//    let suffix = suffixHash[name] === undefined ? '' : suffixHash[name];
 //    return 'glTF-Embedded' + suffix;
 //};
 
 TutorialFurtherPbrModelIndex.getModelInfoCollection = function() {
-    var numModels = TutorialFurtherPbrModelIndex.List.length;
-    var modelInfoCollection = {};
-    for (var i = 0; i < numModels; ++i) {
-        var category = TutorialFurtherPbrModelIndex.List[i].category;
-        var name = TutorialFurtherPbrModelIndex.List[i].name;
-        var scale = TutorialFurtherPbrModelIndex.List[i].scale;
+    let numModels = TutorialFurtherPbrModelIndex.List.length;
+    let modelInfoCollection = {};
+    for (let i = 0; i < numModels; ++i) {
+        let category = TutorialFurtherPbrModelIndex.List[i].category;
+        let name = TutorialFurtherPbrModelIndex.List[i].name;
+        let scale = TutorialFurtherPbrModelIndex.List[i].scale;
         modelInfoCollection[name] = {
             category: category,
             name: name,
@@ -47,15 +53,15 @@ TutorialFurtherPbrModelIndex.getModelInfoCollection = function() {
 }
 
 TutorialFurtherPbrModelIndex.getCurrentModel = function() {
-    var modelInfoCollection = TutorialFurtherPbrModelIndex.getModelInfoCollection();
-    var queryString = window.location.search.substring(1);
-    var parts = queryString.replace(/\+/g, '%20').split('&');
-    var options = {};
-    for (var i = 0, len = parts.length; i < len; ++i) {
-        var subparts = parts[i].split('=');
+    let modelInfoCollection = TutorialFurtherPbrModelIndex.getModelInfoCollection();
+    let queryString = window.location.search.substring(1);
+    let parts = queryString.replace(/\+/g, '%20').split('&');
+    let options = {};
+    for (let i = 0, len = parts.length; i < len; ++i) {
+        let subparts = parts[i].split('=');
 
-        var name = decodeURIComponent(subparts[0]);
-        var value = subparts[1];
+        let name = decodeURIComponent(subparts[0]);
+        let value = subparts[1];
         if (value) {
             options[name] = decodeURIComponent(value);
         }

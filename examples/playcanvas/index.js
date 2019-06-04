@@ -1,4 +1,4 @@
-var modelInfo = ModelIndex.getCurrentModel();
+let modelInfo = ModelIndex.getCurrentModel();
 if (!modelInfo) {
     modelInfo = TutorialModelIndex.getCurrentModel();
 }
@@ -18,9 +18,11 @@ if (!modelInfo) {
     throw new Error('Model not specified or not found in list.');
 }
 
+let decoderModule;
+
 // create a PlayCanvas application
-var canvas = document.getElementById('application');
-var app = new pc.Application(canvas, {
+let canvas = document.getElementById('application');
+let app = new pc.Application(canvas, {
     mouse: new pc.Mouse(document.body),
     keyboard: new pc.Keyboard(window)
 });
@@ -35,14 +37,14 @@ window.addEventListener('resize', function() {
     app.resizeCanvas();
 });
 // create camera entity
-var camera = new pc.Entity('camera');
+let camera = new pc.Entity('camera');
 camera.addComponent('camera');
 camera.addComponent('script');
 app.root.addChild(camera);
 camera.setLocalPosition(0, 0, 1);
 
 // make the camera interactive
-app.assets.loadFromUrl('../../libs/playcanvas/v0.222.0-dev/orbit-camera.js', 'script', function (err, asset) {
+app.assets.loadFromUrl('../../libs/playcanvas/v1.18.0-dev/orbit-camera.js', 'script', function (err, asset) {
     camera.script.create('orbitCamera', {
         attributes: {
             inertiaFactor: 0,
@@ -62,7 +64,7 @@ app.assets.loadFromUrl('../../libs/playcanvas/v0.222.0-dev/orbit-camera.js', 'sc
     });
 });
 // set a prefiltered cubemap as the skybox
-var cubemapAsset = new pc.Asset('helipad', 'cubemap', {
+let cubemapAsset = new pc.Asset('helipad', 'cubemap', {
     url: "https://cdn.rawgit.com/playcanvas/playcanvas-gltf/5489ff62/viewer/cubemap/6079289/Helipad.dds"
 }, {
     "textures": [
@@ -86,66 +88,168 @@ cubemapAsset.ready(function () {
     app.scene.skyboxMip = 2;
     app.scene.setSkybox(cubemapAsset.resources);
 });
-// create directional light entity
-var light = new pc.Entity('light');
-light.addComponent('light');
-light.setEulerAngles(45, 0, 0);
-app.root.addChild(light);
 
 // root entity for loaded gltf scenes which can have more than one root entity
-var gltfRoot = new pc.Entity('gltf');
+let gltfRoot = new pc.Entity('gltf');
 app.root.addChild(gltfRoot);
- 
+
+
+function loadScript(src) {
+    let head = document.getElementsByTagName('head')[0];
+    let script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = src;
+    return new Promise(function (resolve) {
+        script.onload = resolve;
+        head.appendChild(script);
+    });
+}
+
 function init(){
-    var url = "../../" + modelInfo.category + "/" + modelInfo.path;
+    if (true) {//typeof WebAssembly !== 'object') {
+        loadScript('../../libs/playcanvas/v1.18.0-dev/draco_decoder.js').then(function () {
+            decoderModule = DracoDecoderModule();
+            onLoad();
+        });
+    } else {
+        loadScript('../../libs/playcanvas/v1.18.0-dev/draco_wasm_wrapper.js').then(function () {
+            fetch('../../libs/playcanvas/v1.18.0-dev//draco_decoder.wasm').then(function (response) {
+                response.arrayBuffer().then(function (arrayBuffer) {
+                    decoderModule = DracoDecoderModule({ wasmBinary: arrayBuffer });
+                    onLoad();
+                });
+            });
+        });
+    }
+}
+
+function onLoad() {
+    let url = "../../" + modelInfo.category + "/" + modelInfo.path;
     if(modelInfo.url) {
         url = modelInfo.url;
     }
-    var basePath = url.substring(0, url.lastIndexOf("/")) + "/";
-    var ext = url.split(".").pop();
-    var isGlb = ext == "glb" ? true : false;
+    let scale = modelInfo.scale;
+    let basePath = url.substring(0, url.lastIndexOf("/")) + "/";
+    let ext = url.split(".").pop();
+    let isGlb = (ext == "glb") ? true : false;
+
+    // create directional light entity
+    let light = new pc.Entity('light');
+    light.addComponent('light',);
+    app.root.addChild(light);
+    light.setEulerAngles(45, 0, 45);
+ 
+    // rotator script
+    let Rotate = pc.createScript('rotate');
+    Rotate.prototype.update = function (deltaTime) {
+        this.entity.rotate(0, -deltaTime * 20, 0);
+    };
+    // glTF scene root that rotates
+    let gltfRoot = new pc.Entity('gltf');
+    gltfRoot.addComponent('script');
+    gltfRoot.script.create('rotate');
+    app.root.addChild(gltfRoot);
 
     if ( isGlb ) {
-        var req = new XMLHttpRequest();
+        let req = new XMLHttpRequest();
         req.open("get", url, true);
         req.responseType = isGlb ? "arraybuffer" : "";
         req.send(null);
 
         req.onload = function(){
-            var arrayBuffer = req.response;
-            loadGlb(arrayBuffer, app.graphicsDevice, function (roots) {
-                initScene(roots);
+            let arrayBuffer = req.response;
+            loadGlb(arrayBuffer, app.graphicsDevice, function (model, textures, animationClips) {
+                // Wrap the model as an asset and add to the asset registry
+                let asset = new pc.Asset('gltf', 'model', {
+                    url: ''
+                });
+                asset.resource = model;
+                asset.loaded = true;
+                app.assets.add(asset);
+
+                // add the loaded scene to the hierarchy
+                gltfRoot.addComponent('model', {
+                    asset: asset
+                });
+
+                // Now that the model is created, after translateAnimation, we have to hook here
+                if (animationClips) {
+                    for (i = 0; i < animationClips.length; i++) {
+                        for(let c = 0; c < animationClips[i].animCurves.length; c++) {
+                            let curve = animationClips[i].animCurves[c];
+                            if (curve.animTargets[0].targetNode === "model")
+                                curve.animTargets[0].targetNode = gltfRoot;
+                        }
+                    }
+                }
+
+                gltfRoot.model.model = model;
+                if ( animationClips && animationClips.length > 0 ) {
+                    gltfRoot.animComponent = new AnimationComponent();
+                }
+                if ( gltfRoot.animComponent ) {
+                    // Add all animations to the model's animation component
+                    for (let i = 0; i < animationClips.length; i++) {
+                        animationClips[i].transferToRoot(gltfRoot);
+                        gltfRoot.animComponent.addClip(animationClips[i]);
+                    }
+                    gltfRoot.animComponent.playClip(animationClips[0].name);
+                }
+                // focus the camera on the newly loaded scene
+                camera.script.orbitCamera.focusEntity = gltfRoot;
+            }, {
+                decoderModule: decoderModule
             });
         }
     } else {
         app.assets.loadFromUrl(url, 'json', function (err, asset) {
-            var json = asset.resource;
-            var gltf = JSON.parse(json);
-            loadGltf(gltf, app.graphicsDevice, function (roots) {
-                initScene(roots);
+            let json = asset.resource;
+            let gltf = JSON.parse(json);
+            loadGltf(gltf, app.graphicsDevice, function (model, textures, animationClips) {
+                // Wrap the model as an asset and add to the asset registry
+                let asset = new pc.Asset('gltf', 'model', {
+                    url: ''
+                });
+                asset.resource = model;
+                asset.loaded = true;
+                app.assets.add(asset);
+
+                // add the loaded scene to the hierarchy
+                gltfRoot.addComponent('model', {
+                    asset: asset
+                });
+
+                // Now that the model is created, after translateAnimation, we have to hook here
+                if (animationClips) {
+                    for (i = 0; i < animationClips.length; i++) {
+                        for(let c = 0; c < animationClips[i].animCurves.length; c++) {
+                            let curve = animationClips[i].animCurves[c];
+                            if (curve.animTargets[0].targetNode === "model")
+                                curve.animTargets[0].targetNode = gltfRoot;
+                        }
+                    }
+                }
+
+                gltfRoot.model.model = model;
+                if ( animationClips && animationClips.length > 0 ) {
+                    gltfRoot.animComponent = new AnimationComponent();
+                }
+                if ( gltfRoot.animComponent ) {
+                    // Add all animations to the model's animation component
+                    for (let i = 0; i < animationClips.length; i++) {
+                        animationClips[i].transferToRoot(gltfRoot);
+                        gltfRoot.animComponent.addClip(animationClips[i]);
+                    }
+                    gltfRoot.animComponent.playClip(animationClips[0].name);
+                }
+                // focus the camera on the newly loaded scene
+                camera.script.orbitCamera.focusEntity = gltfRoot;
             }, {
+                decoderModule: decoderModule,
                 basePath: basePath
             });
         });
     }
-
-    var initScene = function (roots) {
-        // add the loaded scene to the hierarchy
-        roots.forEach(function (root) {
-            gltfRoot.addChild(root);
-        });
-
-        // focus the camera on the newly loaded scene
-        camera.script.orbitCamera.focusEntity = gltfRoot;
-    };
 }
-
-
-var timer = 0;
-app.on("update", function (deltaTime) {
-    timer += deltaTime;
-    // code executed on every frame
-    gltfRoot.rotate(0, -0.2, 0);
-});
 
 init();
