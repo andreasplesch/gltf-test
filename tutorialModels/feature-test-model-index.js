@@ -10,6 +10,7 @@ TutorialFeatureTestModelIndex.List = [
     {category:'tutorialModels', name:'NormalTangentMirrorTest', scale:1.0},
     {category:'tutorialModels', name:'OrientationTest', scale:0.2},
     {category:'tutorialModels', name:'TextureCoordinateTest', scale:1.0},
+    {category:'tutorialModels', name:'TextureTransformTest', scale:1.0},
     {category:'tutorialModels', name:'TextureSettingsTest', scale:0.2},
     {category:'tutorialModels', name:'VertexColorTest', scale:1.0},
 ];
