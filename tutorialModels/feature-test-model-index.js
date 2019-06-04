@@ -18,7 +18,8 @@ TutorialFeatureTestModelIndex.List = [
 TutorialFeatureTestModelIndex.HasJpgScreenshot = [ // List of only models that have *.jpg screenshots
     'BoomBoxWithAxes',
     'MultiUVTest',
-    'MorphPrimitivesTest'
+    'MorphPrimitivesTest',
+    'TextureTransformTest'
 ];
 
 TutorialFeatureTestModelIndex.getScreenshot = function(name) {
