@@ -184,7 +184,7 @@
           "extensions": {
             "KHR_texture_transform": {
               "offset": [
-                1.5,
+                -1.5,
                 -0.0
               ],
               "rotation": 1.57,
