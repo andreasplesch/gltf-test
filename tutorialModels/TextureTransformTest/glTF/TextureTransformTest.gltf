@@ -185,7 +185,7 @@
             "KHR_texture_transform": {
               "offset": [
                 -0,
-                0.2
+                1
               ],
               "rotation": 1,
               "scale": [
